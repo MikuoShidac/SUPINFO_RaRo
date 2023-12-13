@@ -8,6 +8,6 @@ const TrainSchema = new mongoose.Schema({
   difficulte: { type: Number, required: true },
 });
 
-export const TrainModel = mongoose.model("Exercise", TrainSchema);
+export const TrainModel = mongoose.model("Train", TrainSchema);
 
 export default TrainModel;

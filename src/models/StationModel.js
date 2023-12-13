@@ -7,6 +7,6 @@ const StationSchema = new mongoose.Schema({
   Picture: { type: Number, required: true },
 });
 
-export const StationModel = mongoose.model("Exercise", StationSchema);
+export const StationModel = mongoose.model("Station", StationSchema);
 
 export default StationModel;

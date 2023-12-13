@@ -4,6 +4,7 @@ import z from "zod";
 import { processRequestBody } from "zod-express-middleware";
 import UserRepository from "../repositories/UserRepository.js";
 import { UserModel } from "../models/UserModel.js";
+import { adminMiddleware } from "../middlewares/adminMiddleware.js";
 
 const router = express.Router();
 
@@ -19,7 +20,7 @@ const UserRegisterSchema = z.object({
     password: z.string().min(6),
 });
 
-router.get("/", /* adminMiddleware,*/async (req, res) => {
+router.get("/", adminMiddleware, async (req, res) => {
     const users = await UserRepository.listUsers();
     res.json(users);
 });

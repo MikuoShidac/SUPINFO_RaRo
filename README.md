@@ -1,0 +1,1 @@
+dans un terminal exécutez la commande "npm install"

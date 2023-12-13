@@ -5,6 +5,7 @@ import { processRequestBody } from "zod-express-middleware";
 import UserRepository from "../repositories/UserRepository.js";
 import { UserModel } from "../models/UserModel.js";
 import { adminMiddleware } from "../middlewares/adminMiddleware.js";
+import { employeeMiddleware } from "../middlewares/employeeMiddleware.js";
 
 const router = express.Router();
 
@@ -21,7 +22,7 @@ const UserRegisterSchema = z.object({
     role: z.enum(["User", "Employee"])
 });
 
-router.get("/", adminMiddleware, async (req, res) => {
+router.get("/", adminMiddleware || employeeMiddleware, async (req, res) => {
     const users = await UserRepository.listUsers();
     res.json(users);
 });

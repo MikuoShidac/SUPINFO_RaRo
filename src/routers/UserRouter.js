@@ -18,6 +18,7 @@ const UserRegisterSchema = z.object({
     username: z.string(),
     email: z.string().email(),
     password: z.string().min(12),
+    role: z.enum(["User", "Employee"])
 });
 
 router.get("/", adminMiddleware, async (req, res) => {
@@ -30,7 +31,6 @@ router.post("/register", processRequestBody(UserRegisterSchema), (req, res) => {
       new UserModel({
         username: req.body.username,
         email: req.body.email,
-        role: "User",
       }),
       req.body.password,
       (err, account) => {
@@ -50,7 +50,7 @@ router.post("/login", passport.authenticate("local"), (req, res) => {
   res.status(200).send("Logged");
 });
 
-router.post("/", processRequestBody(UserCreationPayload), async (req, res) => {
+/*router.post("/", processRequestBody(UserCreationPayload), async (req, res) => {
     const payload = req.body;
   
     const user = await UserRepository.createUser({
@@ -59,12 +59,13 @@ router.post("/", processRequestBody(UserCreationPayload), async (req, res) => {
     });
   
     res.status(201).json(user);
-});
+});*/
 
 router.put("/update", processRequestBody(UserCreationPayload), async (req, res)=>{
     try{
         const id = req.user?.id;
-        const user = await UserRepository.updateUser(id,req.body);
+        const role = req.user?.role;
+        const user = await UserRepository.updateUser(id,req.body,role);
         res.json(req.body);
     }catch (e){
         console.log(e);

@@ -16,10 +16,11 @@ class UserRepository {
     return await UserModel.create(userPayload);
   }
 
-  async updateUser(id,userPayload) {
+  async updateUser(id,userPayload,rolee) {
     const newUser = await UserModel.findByIdAndUpdate(
         {
             _id: id,
+            role: rolee
         },
         userPayload
     );

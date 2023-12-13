@@ -11,13 +11,13 @@ const router = express.Router();
 const UserCreationPayload = z.object({
     username: z.string(),
     email: z.string().email(),
-    password: z.string().min(8),
+    password: z.string().min(12),
 });
 
 const UserRegisterSchema = z.object({
     username: z.string(),
     email: z.string().email(),
-    password: z.string().min(6),
+    password: z.string().min(12),
 });
 
 router.get("/", adminMiddleware, async (req, res) => {
@@ -60,5 +60,22 @@ router.post("/", processRequestBody(UserCreationPayload), async (req, res) => {
   
     res.status(201).json(user);
 });
+
+router.put("/update", processRequestBody(UserCreationPayload), async (req, res)=>{
+    try{
+        const id = req.user?.id;
+        const user = await UserRepository.updateUser(id,req.body);
+        res.json(req.body);
+    }catch (e){
+        console.log(e);
+        return res.status(500).send("Internal server error");
+    }
+});
+
+router.delete("/delete", async (res, req)=> {
+    const id = req.user?.id;
+    await UserRepository.deleteUser(id);
+    res.status(204).send();
+})
   
 export default router;

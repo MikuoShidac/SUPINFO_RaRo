@@ -1,5 +1,5 @@
 import express from "express";
-import passport from "passport";
+import passport from "../passport.js";
 import z from "zod";
 import { processRequestBody } from "zod-express-middleware";
 import UserRepository from "../repositories/UserRepository.js";
@@ -32,6 +32,7 @@ router.post("/register", processRequestBody(UserRegisterSchema), (req, res) => {
       new UserModel({
         username: req.body.username,
         email: req.body.email,
+        role: req.body.role,
       }),
       req.body.password,
       (err, account) => {

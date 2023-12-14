@@ -27,7 +27,7 @@ class UserRepository {
   }
 
   async deleteUser(id){
-    await UserModel.deleteUser({_id: id});
+    await UserModel.deleteOne({_id: id});
   }
 }
 

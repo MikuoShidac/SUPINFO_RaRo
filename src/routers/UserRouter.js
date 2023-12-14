@@ -76,10 +76,20 @@ router.put("/update", processRequestBody(UserCreationPayload), async (req, res)=
     }
 });
 
-router.delete("/delete", async (res, req)=> {
-    const id = req.user?.id;
-    await UserRepository.deleteUser(id);
-    res.status(204).send();
-})
-  
+router.post("/delete/:id", async (req, res)=> {
+    const id = await req.params.id;
+    console.log(id)
+
+    if(id !== req.user?.id){
+      res.status(403).json("FORBIDDEN \n VOUS N4AVEZ PAS LE DROIT DE SUPPRIMER UN AUTRE COMPTE QUE LE VOTRE !");
+    }else{
+      req.logOut(function(err){
+        if (err){return next(err);}
+      });
+
+      UserRepository.deleteUser(id);
+      res.status(204).send();
+    }
+});
+
 export default router;

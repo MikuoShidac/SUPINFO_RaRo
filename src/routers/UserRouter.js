@@ -22,7 +22,7 @@ const UserRegisterSchema = z.object({
     role: z.enum(["User", "Employee"])
 });
 
-router.get("/", adminMiddleware || employeeMiddleware, async (req, res) => {
+router.get("/", employeeMiddleware, async (req, res) => {
     const users = await UserRepository.listUsers();
     res.json(users);
 });
@@ -33,6 +33,7 @@ router.post("/register", processRequestBody(UserRegisterSchema), (req, res) => {
         username: req.body.username,
         email: req.body.email,
         role: req.body.role,
+        password: req.body.password,
       }),
       req.body.password,
       (err, account) => {

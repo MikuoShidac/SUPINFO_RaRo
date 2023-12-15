@@ -11,9 +11,7 @@ class StationRepository {
     }
   
     async createStation(payload) {
-      const Station = await StationModel.create(payload);
-  
-      return Station;
+      return await StationModel.create(payload);
     }
   
     async getStationById(id) {
@@ -21,14 +19,14 @@ class StationRepository {
     }
   
     async updateStation(id, payload) {
-      const newStation = await StationModel.findOneAndUpdate(
+      const station = await StationModel.findByIdAndUpdate(
         {
           _id: id,
         },
         payload
       );
   
-      return newStation;
+      return station;
     }
   
     async deleteStation(id) {

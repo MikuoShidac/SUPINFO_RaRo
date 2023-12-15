@@ -1,4 +1,6 @@
 import { TrainModel } from "../models/TrainModel.js";
+import StationRepository from "./StationRepository.js";
+import Station from "../models/StationModel.js";
 
 class TrainRepository {
     async getTrain({ name }) {

@@ -1,6 +1,6 @@
 import express from "express";
 import UserRouter from "./routers/UserRouter.js";
-//import TrainRouter from "./routers/TrainRouter.js";
+import TrainRouter from "./routers/TrainRouter.js";
 //import TicketRouter from "./routers/TicketRouter.js";
 //import StationRouter from "./routers/StationRouter.js";
 import cookieParser from "cookie-parser";
@@ -27,8 +27,8 @@ app.use(async function logRequest(req, res, next) {
     next();
 });
 
-/*app.use("/station", StationRouter);
-app.use("/train", TrainRouter);*/
+//app.use("/station", StationRouter);
+app.use("/train", TrainRouter);
 app.use("/user", UserRouter);
 
 export default app;

@@ -1,6 +1,7 @@
 import express from "express";
 import TrainRepository from "../repositories/TrainRepository.js";
 import StationRepository from "../repositories/StationRepository.js";
+import { adminMiddleware } from "../middlewares/adminMiddleware.js";
 
 const router = express.Router();
 
@@ -28,7 +29,7 @@ router.get("/:id", async (req, res) => {
     }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", adminMiddleware, async (req, res) => {
     const idStart = await req.body.DepartureStation;
     const idArrival = await req.body.ArrivalStation;
     const payload = {
@@ -42,7 +43,7 @@ router.post("/", async (req, res) => {
     res.status(201).json(train);
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", adminMiddleware, async (req, res) => {
     try {
       const { id } = req.params;
       const idStart = await req.body.DepartureStation;
@@ -61,7 +62,7 @@ router.put("/:id", async (req, res) => {
     }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", adminMiddleware, async (req, res) => {
     await TrainRepository.deleteTrain(req.params.id);
   
     res.status(204).send();

@@ -1,5 +1,6 @@
 import express from "express";
 import StationRepository from "../repositories/StationRepository.js";
+import { adminMiddleware } from "../middlewares/adminMiddleware.js";
 
 const router = express.Router();
 
@@ -29,13 +30,13 @@ router.get("/", async (req, res) => {
     }
   });
   
-  router.post("/", async (req, res) => {
+  router.post("/", adminMiddleware, async (req, res) => {
     const station = await StationRepository.createStation(req.body);
   
     res.status(201).json(station);
   });
   
-  router.put("/:id", async (req, res) => {
+  router.put("/:id", adminMiddleware, async (req, res) => {
     try {
       const { id } = req.params;
       const station = await StationRepository.updateStation(id, req.body);
@@ -46,7 +47,7 @@ router.get("/", async (req, res) => {
     }
   });
   
-  router.delete("/:id", async (req, res) => {
+  router.delete("/:id", adminMiddleware, async (req, res) => {
     await StationRepository.deleteStation(req.params.id);
   
     res.status(204).send();

@@ -1,6 +1,6 @@
-export function employeeMiddleware(req, res, next) {
+export function userMiddleware(req, res, next) {
     const role = req.user?.role;
-    if (role === "User") {
+    if (role === "Employee") {
       return res.status(403).json("Forbidden");
     }
   

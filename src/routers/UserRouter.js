@@ -6,6 +6,7 @@ import UserRepository from "../repositories/UserRepository.js";
 import { UserModel } from "../models/UserModel.js";
 import { adminMiddleware } from "../middlewares/adminMiddleware.js";
 import { employeeMiddleware } from "../middlewares/employeeMiddleware.js";
+import { userMiddleware } from "../middlewares/userMiddleware.js";
 
 const router = express.Router();
 
@@ -28,6 +29,7 @@ router.get("/", employeeMiddleware, async (req, res) => {
 });
 
 router.post("/register", processRequestBody(UserRegisterSchema), (req, res) => {
+  if (req.user?.role === null){
     UserModel.register(
       new UserModel({
         username: req.body.username,
@@ -47,24 +49,17 @@ router.post("/register", processRequestBody(UserRegisterSchema), (req, res) => {
         });
       }
     );
+  }else{
+    return res.status(403).json("You can't register if logged in");
+  }
 });
   
 router.post("/login", passport.authenticate("local"), (req, res) => {
   res.status(200).send("Logged");
 });
 
-/*router.post("/", processRequestBody(UserCreationPayload), async (req, res) => {
-    const payload = req.body;
-  
-    const user = await UserRepository.createUser({
-      role: "User",
-      ...payload,
-    });
-  
-    res.status(201).json(user);
-});*/
-
-router.put("/update", processRequestBody(UserCreationPayload), async (req, res)=>{
+router.put("/update", userMiddleware, processRequestBody(UserCreationPayload), async (req, res)=>{
+  if (req.user?.role !== null){
     try{
         const id = req.user?.id;
         const role = req.user?.role;
@@ -74,14 +69,17 @@ router.put("/update", processRequestBody(UserCreationPayload), async (req, res)=
         console.log(e);
         return res.status(500).send("Internal server error");
     }
+  }else{
+    return res.status(403).json("You need to be logged in to update your accout");
+  }
 });
 
 router.post("/delete/:id", async (req, res)=> {
+  if (req.user?.role !== undefined){
     const id = await req.params.id;
-    console.log(id)
 
     if(id !== req.user?.id){
-      res.status(403).json("FORBIDDEN \n VOUS N4AVEZ PAS LE DROIT DE SUPPRIMER UN AUTRE COMPTE QUE LE VOTRE !");
+      res.status(403).json("FORBIDDEN \n YOU DON'T HAVE THE RIGHT TO DELETE ANOTHER ACCOUNT THAN YOURS !");
     }else{
       req.logOut(function(err){
         if (err){return next(err);}
@@ -90,6 +88,20 @@ router.post("/delete/:id", async (req, res)=> {
       UserRepository.deleteUser(id);
       res.status(204).send();
     }
+  }else{
+    return res.status(403).json("You need to be logged in to delete your accout");
+  }
+});
+
+router.get("/logout", async (req, res)=>{
+  if (req.user?.role !== null){
+    req.logOut(function(err){
+      if (err){return next(err);}
+    });
+    res.status(204).send();
+  }else{
+    return res.status(403).json("You need to be logged in to log out");
+  }
 });
 
 export default router;

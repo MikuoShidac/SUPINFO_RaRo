@@ -1,6 +1,5 @@
 import express from "express";
 import TicketRepository from "../repositories/TicketRepository.js";
-import UserRepository from "../repositories/UserRepository.js";
 import TrainRepository from "../repositories/TrainRepository.js";
 import StationRepository from "../repositories/StationRepository.js";
 
@@ -9,7 +8,7 @@ const router = express.Router();
 router.get("/", async (req, res)=>{
     const { name }= req.query;
     const query = name ? { name } : {};
-    const tickets = await TicketRepository.getTrain({});
+    const tickets = await TicketRepository.getTicket({});
     res.json(tickets);
 })
 
@@ -17,10 +16,10 @@ router.get("/:id", async (req, res) => {
     try {
       const { id } = req.params;
   
-      const ticket = await TicketRepository.getTrainById(id);
+      const ticket = await TicketRepository.getTicketById(id);
   
       if (!ticket) {
-        return res.status(404).send("Train not found");
+        return res.status(404).send("Ticket not found");
       }
   
       res.json(ticket);
@@ -30,38 +29,17 @@ router.get("/:id", async (req, res) => {
     }
 });
 
-/*router.post("/", async (req, res) => {
-    const idStart = await req.body.DepartureStation;
-    const idArrival = await req.body.ArrivalStation;
+router.post("/", async (req, res) => {
+    const idTrain = await req.body.TravelTrain
     const payload = {
       nom : req.body.nom, 
-      DepartureHours: req.body.DepartureHours,
-      DepartureStation: await StationRepository.getStationById(idStart),
-      ArrivalStation: await StationRepository.getStationById(idArrival)
+      email : req.user?.email,
+      TravelTrain : await TrainRepository.getTrainById(idTrain)
     }; 
-    const train = await TrainRepository.createTrain(payload);
+    const ticket = await TicketRepository.createTicket(payload);
 
-    res.status(201).json(train);
+    res.status(201).json(ticket);
 });
-
-router.put("/:id", async (req, res) => {
-    try {
-      const { id } = req.params;
-      const idStart = await req.body.DepartureStation;
-      const idArrival = await req.body.ArrivalStation;
-      const payload = {
-      nom : req.body.nom, 
-      DepartureHours: req.body.DepartureHours,
-      DepartureStation: await StationRepository.getStationById(idStart),
-      ArrivalStation: await StationRepository.getStationById(idArrival)
-      }; 
-      const train = await TrainRepository.updateTrain(id, payload);
-      res.json(payload);
-    } catch (e) {
-      console.log(e);
-      return res.status(500).send("Internal server error");
-    }
-});*/
 
 router.delete("/:id", async (req, res) => {
     await TicketRepository.deleteTicket(req.params.id);

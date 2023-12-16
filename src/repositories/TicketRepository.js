@@ -21,11 +21,11 @@ class TicketRepository {
       return ticket;
     }
   
-    async getTrainById(id) {
+    async getTicketById(id) {
       return await TicketModel.findById(id);
     }
   
-    //je ne sais pas s'il y a vraiment besoin de l'option update ticket, c'est souvent pas possible irl pour un usager
+    /*je ne sais pas s'il y a vraiment besoin de l'option update ticket, c'est souvent pas possible irl pour un usager
     async updateTicket(id, payload) {
       const newTicket = await TicketModel.findOneAndUpdate(
         {
@@ -35,7 +35,8 @@ class TicketRepository {
       );
   
       return newTicket;
-    }
+    } 
+    tu as raison, on va le laisser commenter pour l'instant */
   
     async deleteTicket(id) {
       await TicketModel.deleteOne({ _id: id });

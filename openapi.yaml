@@ -1,0 +1,587 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Supinfo_raro API
+  description: API documentation for Supinfo_raro, a train ticket booking app.
+paths:
+  /user:
+    get:
+      summary: Get all users
+      description: Retrieve a list of all users (Employee only).
+      tags:
+        - Users
+      security:
+        - employeeAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                - username: john_doe
+                  email: john@example.com
+                  role: User
+                - username: admin_user
+                  email: admin@example.com
+                  role: Admin
+    post:
+      summary: Register a new user
+      description: Register a new user (Employee only). If logged in, registration is forbidden.
+      tags:
+        - Users
+      security:
+        - employeeAuth: []
+      requestBody:
+        description: User registration payload
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 12
+                role:
+                  type: string
+                  enum: [User, Employee]
+              required:
+                - username
+                - email
+                - password
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              example: Created
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              example:
+                error: Bad Request
+                message: Invalid input data
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              example:
+                error: Forbidden
+                message: User can't register if logged in
+    put:
+      summary: Update user information
+      description: Update user information (User only).
+      tags:
+        - Users
+      security:
+        - userAuth: []
+      requestBody:
+        description: User update payload
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 12
+              required:
+                - username
+                - email
+                - password
+      responses:
+        '200':
+          description: User information updated successfully
+          content:
+            application/json:
+              example:
+                username: updated_user
+                email: updated@example.com
+                role: User
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              example:
+                error: Bad Request
+                message: Invalid input data
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              example:
+                error: Forbidden
+                message: User needs to be logged in to update their account
+    delete:
+      summary: Delete user account
+      description: Delete user account (User only).
+      tags:
+        - Users
+      security:
+        - userAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: User ID to delete
+          schema:
+            type: string
+      responses:
+        '204':
+          description: User account deleted successfully
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              example:
+                error: Forbidden
+                message: User needs to be logged in to delete their account
+  /train:
+    get:
+      summary: Get all trains
+      description: Retrieve a list of all trains.
+      tags:
+        - Trains
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                - nom: Train1
+                  DepartureHours: 10:00 AM
+                  DepartureStation: Station1
+                  ArrivalStation: Station2
+                - nom: Train2
+                  DepartureHours: 2:00 PM
+                  DepartureStation: Station3
+                  ArrivalStation: Station4
+    get:
+      summary: Get train by ID
+      description: Retrieve train details by ID.
+      tags:
+        - Trains
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Train ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                nom: Train1
+                DepartureHours: 10:00 AM
+                DepartureStation: Station1
+                ArrivalStation: Station2
+        '404':
+          description: Train not found
+          content:
+            application/json:
+              example:
+                error: Not Found
+                message: Train not found
+    post:
+      summary: Create a new train
+      description: Create a new train (Admin only).
+      tags:
+        - Trains
+      security:
+        - adminAuth: []
+      requestBody:
+        description: Train creation payload
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nom:
+                  type: string
+                DepartureHours:
+                  type: string
+                DepartureStation:
+                  type: object
+                ArrivalStation:
+                  type: object
+              required:
+                - nom
+                - DepartureHours
+                - DepartureStation
+                - ArrivalStation
+      responses:
+        '201':
+          description: Train created successfully
+          content:
+            application/json:
+              example:
+                nom: NewTrain
+                DepartureHours: 3:00 PM
+                DepartureStation: NewStation1
+                ArrivalStation: NewStation2
+    put:
+      summary: Update train information
+      description: Update train information (Admin only).
+      tags:
+        - Trains
+      security:
+        - adminAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Train ID
+          schema:
+            type: string
+      requestBody:
+        description: Train update payload
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nom:
+                  type: string
+                DepartureHours:
+                  type: string
+                DepartureStation:
+                  type: object
+                ArrivalStation:
+                  type: object
+              required:
+                - nom
+                - DepartureHours
+                - DepartureStation
+                - ArrivalStation
+      responses:
+        '200':
+          description: Train information updated successfully
+          content:
+            application/json:
+              example:
+                nom: UpdatedTrain
+                DepartureHours: 4:00 PM
+                DepartureStation: UpdatedStation1
+                ArrivalStation: UpdatedStation2
+        '404':
+          description: Train not found
+          content:
+            application/json:
+              example:
+                error: Not Found
+                message: Train not found
+    delete:
+      summary: Delete train
+      description: Delete train by ID (Admin only).
+      tags:
+        - Trains
+      security:
+        - adminAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Train ID
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Train deleted successfully
+        '404':
+          description: Train not found
+          content:
+            application/json:
+              example:
+                error: Not Found
+                message: Train not found
+  /ticket:
+    get:
+      summary: Get all tickets
+      description: Retrieve a list of all tickets.
+      tags:
+        - Tickets
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                - nom: Ticket1
+                  email: user1@example.com
+                  TravelTrain: Train1
+                - nom: Ticket2
+                  email: user2@example.com
+                  TravelTrain: Train2
+    get:
+      summary: Get ticket by ID
+      description: Retrieve ticket details by ID.
+      tags:
+        - Tickets
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Ticket ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                nom: Ticket1
+                email: user1@example.com
+                TravelTrain: Train1
+        '404':
+          description: Ticket not found
+          content:
+            application/json:
+              example:
+                error: Not Found
+                message: Ticket not found
+    post:
+      summary: Create a new ticket
+      description: Create a new ticket.
+      tags:
+        - Tickets
+      requestBody:
+        description: Ticket creation payload
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nom:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                TravelTrain:
+                  type: object
+              required:
+                - nom
+                - email
+                - TravelTrain
+      responses:
+        '201':
+          description: Ticket created successfully
+          content:
+            application/json:
+              example:
+                nom: NewTicket
+                email: user3@example.com
+                TravelTrain: NewTrain
+    delete:
+      summary: Delete ticket
+      description: Delete ticket by ID.
+      tags:
+        - Tickets
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Ticket ID
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Ticket deleted successfully
+        '404':
+          description: Ticket not found
+          content:
+            application/json:
+              example:
+                error: Not Found
+                message: Ticket not found
+  /station:
+    get:
+      summary: Get all stations
+      description: Retrieve a list of all stations.
+      tags:
+        - Stations
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                - nom: Station1
+                  OpeningHour: 8:00 AM
+                  ClosingHour: 5:00 PM
+                  Picture: station1.jpg
+                - nom: Station2
+                  OpeningHour: 9:00 AM
+                  ClosingHour: 6:00 PM
+                  Picture: station2.jpg
+    get:
+      summary: Get station by ID
+      description: Retrieve station details by ID.
+      tags:
+        - Stations
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Station ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                nom: Station1
+                OpeningHour: 8:00 AM
+                ClosingHour: 5:00 PM
+                Picture: station1.jpg
+        '404':
+          description: Station not found
+          content:
+            application/json:
+              example:
+                error: Not Found
+                message: Station not found
+    post:
+      summary: Create a new station
+      description: Create a new station (Admin only).
+      tags:
+        - Stations
+      security:
+        - adminAuth: []
+      requestBody:
+        description: Station creation payload
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nom:
+                  type: string
+                OpeningHour:
+                  type: string
+                ClosingHour:
+                  type: string
+                Picture:
+                  type: string
+              required:
+                - nom
+                - OpeningHour
+                - ClosingHour
+                - Picture
+      responses:
+        '201':
+          description: Station created successfully
+          content:
+            application/json:
+              example:
+                nom: NewStation
+                OpeningHour: 10:00 AM
+                ClosingHour: 7:00 PM
+                Picture: newstation.jpg
+    put:
+      summary: Update station information
+      description: Update station information (Admin only).
+      tags:
+        - Stations
+      security:
+        - adminAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Station ID
+          schema:
+            type: string
+      requestBody:
+        description: Station update payload
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nom:
+                  type: string
+                OpeningHour:
+                  type: string
+                ClosingHour:
+                  type: string
+                Picture:
+                  type: string
+              required:
+                - nom
+                - OpeningHour
+                - ClosingHour
+                - Picture
+      responses:
+        '200':
+          description: Station information updated successfully
+          content:
+            application/json:
+              example:
+                nom: UpdatedStation
+                OpeningHour: 11:00 AM
+                ClosingHour: 8:00 PM
+                Picture: updatedstation.jpg
+        '404':
+          description: Station not found
+          content:
+            application/json:
+              example:
+                error: Not Found
+                message: Station not found
+    delete:
+      summary: Delete station
+      description: Delete station by ID (Admin only).
+      tags:
+        - Stations
+      security:
+        - adminAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Station ID
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Station deleted successfully
+        '404':
+          description: Station not found
+          content:
+            application/json:
+              example:
+                error: Not Found
+                message: Station not found
+components:
+  securitySchemes:
+    employeeAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+    adminAuth:
+      type: apiKey
+      in: header
+      name: Authorization
